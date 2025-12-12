@@ -1,741 +1,557 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <title>MATOME | まとめサイト風ブログ</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="話題のニュース・SNSネタ・解説記事をゆるくまとめる個人ブログ。" />
-  <style>
-    :root {
-      --bg: #f5f6f8;
-      --bg-card: #ffffff;
-      --border: #e1e4e8;
-      --text: #222222;
-      --muted: #666666;
-      --accent: #0070c9;
-      --accent-soft: #e6f2ff;
-      --accent-dark: #004a80;
-    }
+<meta charset="UTF-8">
+<title>シンプル掲示板（2ちゃん風）</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root {
+    --link-color: #0066cc;
+    --border-color: #ddd;
+    --bg-light: #f7f7f7;
+  }
 
-    * {
-      box-sizing: border-box;
-    }
+  * { box-sizing: border-box; }
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-    }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #ffffff;
+    color: #000000;
+  }
 
-    a {
-      color: var(--accent);
-      text-decoration: none;
-      transition: color 0.15s ease, background-color 0.15s ease;
-    }
+  a {
+    color: var(--link-color);
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
 
-    a:hover {
-      color: var(--accent-dark);
-    }
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #fff;
+    border-bottom: 1px solid var(--border-color);
+    padding: 8px 12px;
+  }
 
-    img {
-      max-width: 100%;
-      display: block;
-    }
+  header h1 {
+    margin: 0;
+    font-size: 20px;
+  }
+  header small {
+    color: #666;
+    font-size: 11px;
+  }
 
-    /* ===== Header ===== */
-    .site-header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: #ffffffcc;
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    }
+  main {
+    display: flex;
+    gap: 8px;
+    padding: 8px;
+  }
 
-    .header-inner {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 10px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
+  /* レイアウト（PC） */
+  .thread-list {
+    flex: 0 0 260px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-light);
+    padding: 8px;
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
+  }
 
-    .site-logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+  .thread-list h2 {
+    margin-top: 0;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 4px;
+  }
 
-    .logo-badge {
-      border: 2px solid var(--text);
-      border-radius: 999px;
-      padding: 4px 12px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      font-size: 18px;
-    }
+  .thread-item {
+    padding: 4px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .thread-item span.title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 180px;
+  }
+  .thread-item span.count {
+    font-size: 11px;
+    color: #666;
+  }
+  .thread-item:hover {
+    background: #e8f2ff;
+  }
+  .thread-item.active {
+    background: #d9e8ff;
+  }
 
-    .site-title-block {
-      display: flex;
+  .new-thread {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-color);
+  }
+  .new-thread label {
+    display: block;
+    font-size: 11px;
+    margin-top: 4px;
+  }
+  .new-thread input,
+  .new-thread textarea {
+    width: 100%;
+    font-size: 12px;
+    padding: 4px;
+    margin-top: 2px;
+  }
+  .new-thread textarea {
+    min-height: 60px;
+    resize: vertical;
+  }
+
+  button {
+    font-size: 12px;
+    padding: 4px 8px;
+    margin-top: 6px;
+    border: 1px solid var(--border-color);
+    background: #fff;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #e8f2ff;
+  }
+
+  /* スレ本文側 */
+  .thread-view {
+    flex: 1;
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    min-height: calc(100vh - 70px);
+    overflow-y: auto;
+  }
+
+  .thread-view h2 {
+    margin: 0 0 4px;
+    font-size: 16px;
+  }
+
+  .thread-meta {
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 8px;
+  }
+
+  .posts {
+    border-top: 1px solid var(--border-color);
+    padding-top: 8px;
+    margin-top: 8px;
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .post {
+    padding: 4px 0;
+    border-bottom: 1px dotted #ccc;
+  }
+
+  .post-header {
+    color: #555;
+    margin-bottom: 2px;
+  }
+  .post-header span.num {
+    font-weight: bold;
+  }
+  .post-header span.name {
+    color: #006600;
+  }
+  .post-header span.date {
+    font-size: 11px;
+  }
+
+  .post-body {
+    white-space: pre-wrap;
+  }
+
+  .new-post {
+    margin-top: 10px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 8px;
+  }
+  .new-post label {
+    display: block;
+    font-size: 11px;
+    margin-top: 4px;
+  }
+  .new-post input,
+  .new-post textarea {
+    width: 100%;
+    font-size: 12px;
+    padding: 4px;
+    margin-top: 2px;
+  }
+  .new-post textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+
+  .notice {
+    font-size: 11px;
+    color: #777;
+    margin-top: 4px;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 11px;
+    color: #777;
+    padding: 8px;
+    border-top: 1px solid var(--border-color);
+  }
+
+  /* スマホ用 */
+  @media (max-width: 768px) {
+    main {
       flex-direction: column;
-      gap: 2px;
     }
-
-    .site-title {
-      font-size: 18px;
-      font-weight: 700;
+    .thread-list {
+      max-height: none;
+      order: 1;
     }
-
-    .site-tagline {
-      font-size: 12px;
-      color: var(--muted);
+    .thread-view {
+      order: 2;
+      min-height: auto;
     }
-
-    .site-nav {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      font-size: 14px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .nav-link {
-      padding: 4px 10px;
-      border-radius: 999px;
-    }
-
-    .nav-link:hover {
-      background: var(--accent-soft);
-    }
-
-    /* ===== Layout ===== */
-    .page {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-
-    .breadcrumbs {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-
-    .page-title {
-      font-size: 22px;
-      font-weight: 700;
-      padding-bottom: 8px;
-      border-bottom: 2px solid var(--text);
-      margin-bottom: 8px;
-    }
-
-    .page-lead {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 16px;
-    }
-
-    .layout-main {
-      display: grid;
-      grid-template-columns: minmax(0, 2.1fr) minmax(260px, 0.95fr);
-      gap: 16px;
-      align-items: flex-start;
-    }
-
-    /* ===== Article list ===== */
-    .card {
-      background: var(--bg-card);
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      padding: 16px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-    }
-
-    .article-card {
-      display: grid;
-      grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
-      gap: 16px;
-      align-items: stretch;
-      margin-bottom: 12px;
-      transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
-    }
-
-    .article-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-      border-color: #d0d7de;
-    }
-
-    .article-thumb {
-      border-radius: 8px;
-      overflow: hidden;
-      height: 150px;
-    }
-
-    .article-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .article-body {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .article-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .badge-category {
-      background: var(--accent-soft);
-      color: var(--accent-dark);
-      border-radius: 999px;
-      padding: 2px 8px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-
-    .badge-comments {
-      border-radius: 999px;
-      padding: 2px 8px;
-      border: 1px solid var(--border);
-      font-size: 11px;
-    }
-
-    .article-title {
-      font-size: 16px;
-      font-weight: 700;
-      margin: 0;
-    }
-
-    .article-excerpt {
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .article-footer {
-      margin-top: auto;
-      font-size: 13px;
-    }
-
-    .read-more {
-      font-weight: 600;
-      position: relative;
-      padding-right: 16px;
-    }
-
-    .read-more::after {
-      content: "›";
-      position: absolute;
-      right: 2px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 14px;
-    }
-
-    /* Pagination (ダミー) */
-    .pagination {
-      display: flex;
-      justify-content: flex-end;
-      gap: 4px;
-      margin-top: 12px;
-      font-size: 13px;
-    }
-
-    .page-link {
-      border-radius: 4px;
-      padding: 4px 8px;
-      border: 1px solid var(--border);
-      background: #fff;
-      color: var(--muted);
-    }
-
-    .page-link.current {
-      font-weight: 700;
-      color: var(--accent-dark);
-      border-color: var(--accent);
-      background: var(--accent-soft);
-    }
-
-    /* ===== Sidebar ===== */
-    .sidebar-section-title {
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      border-left: 3px solid var(--accent);
-      padding-left: 6px;
-    }
-
-    .rank-list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      font-size: 13px;
-    }
-
-    .rank-item {
-      display: flex;
-      gap: 6px;
-      padding: 4px 0;
-      border-bottom: 1px dashed #e0e0e0;
-    }
-
-    .rank-badge {
-      font-weight: 700;
-      color: #d70000;
-      min-width: 26px;
-    }
-
-    .rank-link {
-      flex: 1;
-    }
-
-    .rank-link span {
-      display: inline-block;
-    }
-
-    .comment-list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .comment-item + .comment-item {
-      margin-top: 6px;
-      border-top: 1px dashed #eee;
-      padding-top: 6px;
-    }
-
-    .comment-name {
-      font-weight: 600;
-      margin-right: 4px;
-    }
-
-    /* ===== Article template ===== */
-    .article-template {
-      margin-top: 24px;
-    }
-
-    .article-template-title {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .article-template-meta {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
-
-    .article-template-body {
-      font-size: 14px;
-    }
-
-    .quote-box {
-      margin: 16px 0;
-      padding: 10px 12px;
-      border-left: 4px solid #ff9800;
-      background: #fffaf2;
-      font-size: 13px;
-    }
-
-    .quote-label {
-      font-weight: 700;
-      color: #ff9800;
-      margin-bottom: 4px;
-      font-size: 12px;
-    }
-
-    .related-list {
-      list-style: none;
-      padding: 0;
-      margin: 8px 0 0;
-      font-size: 13px;
-    }
-
-    .related-list li + li {
-      margin-top: 4px;
-    }
-
-    /* ===== Footer ===== */
-    .site-footer {
-      margin-top: 32px;
-      border-top: 1px solid var(--border);
-      padding: 12px 16px 20px;
-      font-size: 12px;
-      color: var(--muted);
-      background: #ffffff;
-    }
-
-    .footer-inner {
-      max-width: 1080px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .footer-nav {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .footer-nav a {
-      color: var(--muted);
-    }
-
-    .footer-nav a:hover {
-      color: var(--accent-dark);
-    }
-
-    /* ===== Back to top button ===== */
-    .back-to-top {
-      position: fixed;
-      right: 16px;
-      bottom: 16px;
-      border: none;
-      background: var(--accent);
-      color: #fff;
-      border-radius: 999px;
-      padding: 8px 14px;
-      font-size: 12px;
-      font-weight: 600;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.18);
-      cursor: pointer;
-      display: none;
-      z-index: 150;
-    }
-
-    .back-to-top.show {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    /* ===== Responsive ===== */
-    @media (max-width: 799px) {
-      .header-inner {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 6px;
-      }
-
-      .layout-main {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .article-card {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .article-thumb {
-        height: 180px;
-      }
-
-      .site-footer {
-        padding-inline: 12px;
-      }
-
-      .page {
-        padding-inline: 12px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .logo-badge {
-        font-size: 16px;
-        padding-inline: 10px;
-      }
-      .site-title {
-        font-size: 16px;
-      }
-      .page-title {
-        font-size: 20px;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
-<body id="top">
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="site-logo">
-        <div class="logo-badge">MATOME</div>
-        <div class="site-title-block">
-          <div class="site-title">まとめサイト風ブログ</div>
-          <div class="site-tagline">ニュース・SNSネタ・2chっぽい話題を、ゆるく一望できる場所。</div>
-        </div>
-      </div>
-      <nav class="site-nav">
-        <a href="#top" class="nav-link">トップ</a>
-        <a href="#latest" class="nav-link">最新記事</a>
-        <a href="#article-template" class="nav-link">記事テンプレ</a>
-        <a href="#footer" class="nav-link">このサイトについて</a>
-      </nav>
+<body>
+
+<header>
+  <h1>おじちゃんねる <small>（ローカル掲示板）</small></h1>
+  <small>※書き込みはこのブラウザの中だけに保存されます（localStorage）</small>
+</header>
+
+<main>
+  <!-- スレ一覧 -->
+  <aside class="thread-list">
+    <h2>スレッド一覧</h2>
+    <div id="threadList"></div>
+
+    <div class="new-thread">
+      <strong>新規スレッド作成</strong>
+      <label>スレタイ：
+        <input type="text" id="newThreadTitle" placeholder="例）雑談スレ part1">
+      </label>
+      <label>本文（1レス目）：
+        <textarea id="newThreadBody" placeholder="スレ立ての本文を書いてください"></textarea>
+      </label>
+      <button id="createThreadBtn">スレ立て</button>
+      <div class="notice">※すべてブラウザ内に保存されます。</div>
     </div>
-  </header>
+  </aside>
 
-  <main class="page">
-    <div class="breadcrumbs">トップ &gt; 話題まとめ一覧</div>
-    <h1 class="page-title" id="latest">話題まとめ一覧</h1>
-    <p class="page-lead">ニュース・SNSネタ・解説系の記事をゆるくまとめています。気になる記事をクリックして、ざっくり概要だけ拾っていくスタイル。</p>
-
-    <div class="layout-main">
-      <!-- ===== Main column ===== -->
-      <section id="article-list">
-        <!-- JSで記事カードを挿入 -->
-      </section>
-
-      <!-- ===== Sidebar ===== -->
-      <aside>
-        <div class="card">
-          <h2 class="sidebar-section-title">人気記事ランキング</h2>
-          <ol class="rank-list" id="popular-list">
-            <!-- JSで挿入 -->
-          </ol>
-        </div>
-
-        <div class="card" style="margin-top:12px;">
-          <h2 class="sidebar-section-title">最新コメント</h2>
-          <ul class="comment-list">
-            <li class="comment-item">
-              <span class="comment-name">名無しの読者</span>
-              <span>：図でなんとなくわかるテックニュースまとめ、助かった。</span>
-            </li>
-            <li class="comment-item">
-              <span class="comment-name">通りすがり</span>
-              <span>：バズったスレの「生活の知恵」シリーズ、もっと読みたい。</span>
-            </li>
-            <li class="comment-item">
-              <span class="comment-name">SNS疲れ気味さん</span>
-              <span>：タイムライン追う元気ないので、ここでざっと流れ追えるの助かる。</span>
-            </li>
-          </ul>
-        </div>
-      </aside>
+  <!-- スレ本文 -->
+  <section class="thread-view">
+    <div id="threadViewInner">
+      <p>左のリストからスレッドを選ぶか、新しくスレッドを立ててください。</p>
     </div>
+  </section>
+</main>
 
-    <!-- ===== Article template ===== -->
-    <section id="article-template" class="article-template card">
-      <h2 class="article-template-title">【テンプレ】SNSで話題のあのニュースをざっくり解説してみた件</h2>
-      <div class="article-template-meta">投稿日：2025-12-01 ／ カテゴリ：ニュース解説</div>
+<footer>
+  © 2025 おじちゃんねる（なんちゃって2ちゃん風ローカル掲示板）
+</footer>
 
-      <div class="article-template-body">
-        <p>ここは個別記事ページ用のテンプレートです。実際の運用では、ここをコピペして別HTMLにしたり、ブログサービス側の記事本文として使ったりします。</p>
+<script>
+  // ===== データ構造 =====
+  // threads: [{ id, title, createdAt, posts: [{name, body, createdAt}] }]
+  const STORAGE_KEY = "simpleBBSData_v1";
 
-        <p>本文は、「何が起きたのか」「なぜ話題なのか」「ざっくりどう理解しておけばいいか」の3ブロックくらいに分けると、まとめサイトっぽい読み心地になります。</p>
+  let state = {
+    threads: [],
+    activeThreadId: null,
+  };
 
-        <div class="quote-box">
-          <div class="quote-label">2ch風レス引用</div>
-          <p>名無しの〇〇さん：<br>
-          「いやこれ、冷静に考えたらこうなるの当たり前なんよな……」</p>
-          <p>別の名無しさん：<br>
-          「ネットの一部だけ切り抜いた情報を信じると、だいたい話がややこしくなるやつ」</p>
-        </div>
-
-        <p>本文中に適当に画像を挿入したいときは、Unsplash のダミー画像を使うと、雰囲気がそれっぽくなります。</p>
-
-        <figure style="margin:16px 0;">
-          <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80" alt="イメージ画像：パソコンとニュース" />
-          <figcaption style="font-size:12px;color:var(--muted);margin-top:4px;">▲ なんとなく「ITニュース解説っぽい」雰囲気のイメージ画像（Unsplash）。</figcaption>
-        </figure>
-
-        <p>最後に「ざっくりポイント」や「このニュースから学べること」を箇条書きにして締めると、読者がスクロールしてざっと見るだけでも内容が頭に入りやすくなります。</p>
-
-        <h3 style="font-size:15px;margin-top:16px;">ざっくりポイント</h3>
-        <ul>
-          <li>タイムラインを全部追わなくても、重要な流れだけ押さえられるようにまとめる。</li>
-          <li>感想やツッコミは、本文の最後に「管理人のひとこと」として1〜2行だけ添える。</li>
-          <li>リンク元・一次情報は、できるだけ本文末尾にまとめて貼っておく。</li>
-        </ul>
-
-        <h3 style="font-size:15px;margin-top:16px;">関連記事</h3>
-        <ul class="related-list">
-          <li><a href="#top">【まとめ】バズったスレから見る「ちょっと役立つ」生活の知恵</a></li>
-          <li><a href="#top">図でなんとなくわかる最新テックニュースまとめ</a></li>
-          <li><a href="#top">SNS疲れした人向け「ゆるく情報を追う」ための小技集</a></li>
-        </ul>
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer" id="footer">
-    <div class="footer-inner">
-      <div>© 2025 MATOME / 個人ゆるまとめブログ</div>
-      <nav class="footer-nav">
-        <a href="#top">トップに戻る</a>
-        <a href="#latest">最新記事</a>
-        <a href="#article-template">記事テンプレ</a>
-      </nav>
-    </div>
-  </footer>
-
-  <button class="back-to-top" id="backToTopBtn" type="button">
-    ↑ ページトップ
-  </button>
-
-  <script>
-    // ダミー記事データ
-    const posts = [
+  // ==== 初期データ ====
+  const defaultData = {
+    threads: [
       {
-        id: 1,
-        title: "SNSで話題のあのニュースをざっくり解説してみた件",
-        date: "2025-12-01",
-        category: "ニュース解説",
-        comments: 12,
-        excerpt: "タイムラインを騒がせたあのニュースを、ざっくりポイントだけ押さえたい人向けのゆるまとめ。",
-        image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80"
-      },
-      {
-        id: 2,
-        title: "バズったスレから見る「ちょっと役立つ」生活の知恵",
-        date: "2025-11-28",
-        category: "ライフハック",
-        comments: 34,
-        excerpt: "地味だけど効く生活ハックを、バズったスレからピックアップして紹介。",
-        image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=900&q=80"
-      },
-      {
-        id: 3,
-        title: "図でなんとなくわかる最新テックニュースまとめ",
-        date: "2025-11-20",
-        category: "テック",
-        comments: 21,
-        excerpt: "細かい専門用語は抜きにして、話題のテックニュースをざっくり図解イメージで整理。",
-        image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80"
-      },
-      {
-        id: 4,
-        title: "【やさしく解説】いまさら聞けないあのネット用語",
-        date: "2025-11-15",
-        category: "ネット文化",
-        comments: 5,
-        excerpt: "タイムラインでよく見るけど、なんとなくふんわりしか分からないネット用語を、ざっくり解説。",
-        image: "https://images.unsplash.com/photo-1517292987719-0369a794ec0f?auto=format&fit=crop&w=900&q=80"
-      }
-    ];
-
-    // 人気記事（ダミー）
-    const popularRanks = [
-      "図でなんとなくわかる最新テックニュースまとめ",
-      "SNSで話題のあのニュースをざっくり解説してみた件",
-      "バズったスレから見る「ちょっと役立つ」生活の知恵",
-      "推し活とSNSとのちょうどいい距離感メモ（準備中）",
-      "休日に読みたい“ゆるめ解説記事”の歩き方"
-    ];
-
-    function renderArticleList() {
-      const listEl = document.getElementById("article-list");
-      const fragment = document.createDocumentFragment();
-
-      posts.forEach(post => {
-        const article = document.createElement("article");
-        article.className = "card article-card";
-
-        article.innerHTML = `
-          <a href="#article-template" class="article-thumb">
-            <img src="${post.image}" alt="${post.title}">
-          </a>
-          <div class="article-body">
-            <div class="article-meta">
-              <span class="badge-category">${post.category}</span>
-              <span>投稿日：${post.date}</span>
-              <span class="badge-comments">コメント ${post.comments}</span>
-            </div>
-            <h2 class="article-title">
-              <a href="#article-template">${post.title}</a>
-            </h2>
-            <p class="article-excerpt">${post.excerpt}</p>
-            <div class="article-footer">
-              <a href="#article-template" class="read-more">続きを読む</a>
-            </div>
-          </div>
-        `;
-
-        fragment.appendChild(article);
-      });
-
-      // 疑似ページネーション
-      const pagination = document.createElement("div");
-      pagination.className = "pagination";
-      pagination.innerHTML = `
-        <span class="page-link current">1</span>
-        <span class="page-link">2</span>
-        <span class="page-link">3</span>
-        <span class="page-link">次へ »</span>
-      `;
-
-      listEl.appendChild(fragment);
-      listEl.appendChild(pagination);
-    }
-
-    function renderPopularList() {
-      const popularEl = document.getElementById("popular-list");
-      popularRanks.forEach((title, index) => {
-        const li = document.createElement("li");
-        li.className = "rank-item";
-        li.innerHTML = `
-          <div class="rank-badge">${index + 1}位</div>
-          <a href="#article-template" class="rank-link"><span>${title}</span></a>
-        `;
-        popularEl.appendChild(li);
-      });
-    }
-
-    // ページトップボタン
-    function setupBackToTop() {
-      const btn = document.getElementById("backToTopBtn");
-      window.addEventListener("scroll", () => {
-        if (window.scrollY > 300) {
-          btn.classList.add("show");
-        } else {
-          btn.classList.remove("show");
-        }
-      });
-
-      btn.addEventListener("click", () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
-    }
-
-    // アンカーリンクをスムーススクロールに
-    function setupSmoothAnchors() {
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener("click", function (e) {
-          const targetId = this.getAttribute("href").slice(1);
-          const target = document.getElementById(targetId);
-          if (target) {
-            e.preventDefault();
-            target.scrollIntoView({ behavior: "smooth", block: "start" });
+        id: "t1",
+        title: "雑談スレ part1",
+        createdAt: new Date().toISOString(),
+        posts: [
+          {
+            name: "名無しさん",
+            body: "雑談はこちらでどうぞ。\nのんびりやっていきましょう。",
+            createdAt: new Date().toISOString()
           }
-        });
+        ]
+      },
+      {
+        id: "t2",
+        title: "ニュース総合スレ",
+        createdAt: new Date().toISOString(),
+        posts: [
+          {
+            name: "名無しさん",
+            body: "最近気になったニュースを貼っていくスレ。",
+            createdAt: new Date().toISOString()
+          }
+        ]
+      },
+      {
+        id: "t3",
+        title: "ネタ・コピペスレ",
+        createdAt: new Date().toISOString(),
+        posts: [
+          {
+            name: "名無しさん",
+            body: "好きなネタやコピペを貼っていく場所です。",
+            createdAt: new Date().toISOString()
+          }
+        ]
+      }
+    ],
+    activeThreadId: "t1"
+  };
+
+  // ===== localStorage 読み込み =====
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        state = defaultData;
+        saveState();
+      } else {
+        state = JSON.parse(raw);
+        // 古いバージョン対策とかあればここで
+      }
+    } catch (e) {
+      console.error("load error", e);
+      state = defaultData;
+    }
+  }
+
+  function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  // ===== ユーティリティ =====
+  function formatDate(iso) {
+    const d = new Date(iso);
+    const pad = (n) => String(n).padStart(2, "0");
+    return (
+      d.getFullYear() + "/" +
+      pad(d.getMonth() + 1) + "/" +
+      pad(d.getDate()) + " " +
+      pad(d.getHours()) + ":" +
+      pad(d.getMinutes())
+    );
+  }
+
+  function findThread(id) {
+    return state.threads.find(t => t.id === id);
+  }
+
+  // ===== DOM要素 =====
+  const threadListEl = document.getElementById("threadList");
+  const threadViewInner = document.getElementById("threadViewInner");
+  const newThreadTitleEl = document.getElementById("newThreadTitle");
+  const newThreadBodyEl = document.getElementById("newThreadBody");
+  const createThreadBtn = document.getElementById("createThreadBtn");
+
+  // ===== スレ一覧の描画 =====
+  function renderThreadList() {
+    threadListEl.innerHTML = "";
+    state.threads.forEach(t => {
+      const div = document.createElement("div");
+      div.className = "thread-item" + (t.id === state.activeThreadId ? " active" : "");
+      div.dataset.id = t.id;
+
+      const titleSpan = document.createElement("span");
+      titleSpan.className = "title";
+      titleSpan.textContent = t.title;
+
+      const countSpan = document.createElement("span");
+      countSpan.className = "count";
+      countSpan.textContent = t.posts.length + "レス";
+
+      div.appendChild(titleSpan);
+      div.appendChild(countSpan);
+
+      div.addEventListener("click", () => {
+        state.activeThreadId = t.id;
+        saveState();
+        renderThreadList();
+        renderActiveThread();
       });
+
+      threadListEl.appendChild(div);
+    });
+  }
+
+  // ===== アクティブなスレ表示 =====
+  function renderActiveThread() {
+    const t = findThread(state.activeThreadId);
+    if (!t) {
+      threadViewInner.innerHTML = "<p>スレッドが選択されていません。</p>";
+      return;
     }
 
-    // 初期化
-    renderArticleList();
-    renderPopularList();
-    setupBackToTop();
-    setupSmoothAnchors();
-  </script>
+    const wrapper = document.createElement("div");
+
+    const h2 = document.createElement("h2");
+    h2.textContent = t.title;
+    wrapper.appendChild(h2);
+
+    const meta = document.createElement("div");
+    meta.className = "thread-meta";
+    meta.textContent = "スレ立て日時: " + formatDate(t.createdAt) +
+      " / レス数: " + t.posts.length;
+    wrapper.appendChild(meta);
+
+    const postsDiv = document.createElement("div");
+    postsDiv.className = "posts";
+
+    t.posts.forEach((p, idx) => {
+      const postDiv = document.createElement("div");
+      postDiv.className = "post";
+
+      const headerDiv = document.createElement("div");
+      headerDiv.className = "post-header";
+
+      const numSpan = document.createElement("span");
+      numSpan.className = "num";
+      numSpan.textContent = (idx + 1) + " ";
+
+      const nameSpan = document.createElement("span");
+      nameSpan.className = "name";
+      nameSpan.textContent = p.name || "名無しさん";
+
+      const dateSpan = document.createElement("span");
+      dateSpan.className = "date";
+      dateSpan.textContent = "  " + formatDate(p.createdAt);
+
+      headerDiv.appendChild(numSpan);
+      headerDiv.appendChild(nameSpan);
+      headerDiv.appendChild(dateSpan);
+
+      const bodyDiv = document.createElement("div");
+      bodyDiv.className = "post-body";
+      bodyDiv.textContent = p.body;
+
+      postDiv.appendChild(headerDiv);
+      postDiv.appendChild(bodyDiv);
+
+      postsDiv.appendChild(postDiv);
+    });
+
+    wrapper.appendChild(postsDiv);
+
+    // 新規レスフォーム
+    const newPostDiv = document.createElement("div");
+    newPostDiv.className = "new-post";
+
+    const title = document.createElement("strong");
+    title.textContent = "新規レス投稿";
+    newPostDiv.appendChild(title);
+
+    const nameLabel = document.createElement("label");
+    nameLabel.textContent = "名前（省略可：未入力なら「名無しさん」）：";
+    const nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.placeholder = "名無しさん";
+    nameLabel.appendChild(nameInput);
+    newPostDiv.appendChild(nameLabel);
+
+    const bodyLabel = document.createElement("label");
+    bodyLabel.textContent = "本文：";
+    const bodyTextarea = document.createElement("textarea");
+    bodyTextarea.placeholder = "本文を入力してください";
+    bodyLabel.appendChild(bodyTextarea);
+    newPostDiv.appendChild(bodyLabel);
+
+    const btn = document.createElement("button");
+    btn.textContent = "書き込む";
+    btn.addEventListener("click", () => {
+      const body = bodyTextarea.value.trim();
+      const name = nameInput.value.trim() || "名無しさん";
+      if (!body) {
+        alert("本文を入力してください。");
+        return;
+      }
+      t.posts.push({
+        name,
+        body,
+        createdAt: new Date().toISOString()
+      });
+      saveState();
+      renderThreadList();
+      renderActiveThread();
+    });
+    newPostDiv.appendChild(btn);
+
+    const note = document.createElement("div");
+    note.className = "notice";
+    note.textContent = "※この掲示板はローカル専用です。他の人からは見えません。";
+    newPostDiv.appendChild(note);
+
+    wrapper.appendChild(newPostDiv);
+
+    threadViewInner.innerHTML = "";
+    threadViewInner.appendChild(wrapper);
+  }
+
+  // ===== 新規スレ立て =====
+  createThreadBtn.addEventListener("click", () => {
+    const title = newThreadTitleEl.value.trim();
+    const body = newThreadBodyEl.value.trim();
+    if (!title) {
+      alert("スレタイを入力してください。");
+      return;
+    }
+    if (!body) {
+      alert("本文（1レス目）を入力してください。");
+      return;
+    }
+    const id = "t" + Date.now();
+
+    const newThread = {
+      id,
+      title,
+      createdAt: new Date().toISOString(),
+      posts: [
+        {
+          name: "名無しさん",
+          body,
+          createdAt: new Date().toISOString()
+        }
+      ]
+    };
+
+    state.threads.unshift(newThread);
+    state.activeThreadId = id;
+    saveState();
+    newThreadTitleEl.value = "";
+    newThreadBodyEl.value = "";
+    renderThreadList();
+    renderActiveThread();
+  });
+
+  // ===== 初期化 =====
+  loadState();
+  renderThreadList();
+  renderActiveThread();
+</script>
+
 </body>
 </html>
