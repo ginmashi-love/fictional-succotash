@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>まとめサイト風ブログサンプル</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #111111;
+      --link: #0066cc;
+      --link-hover: #004499;
+      --border: #dddddd;
+      --muted: #666666;
+      --quote-bg: #f5f5f5;
+      --quote-border: #cccccc;
+      --accent: #f0f0f0;
+      --shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+      --header-height: 60px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    a {
+      color: var(--link);
+      text-decoration: none;
+      transition: color 0.15s ease, text-decoration-color 0.15s ease;
+    }
+
+    a:hover {
+      color: var(--link-hover);
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 2px;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--header-height);
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(4px);
+      border-bottom: 1px solid #e5e5e5;
+      box-shadow: var(--shadow);
+      z-index: 1000;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+    }
+
+    .site-brand {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    .site-logo {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 0.1rem 0.6rem;
+      border: 2px solid #000000;
+      border-radius: 4px;
+    }
+
+    .site-title {
+      font-size: 1rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    nav ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+    }
+
+    nav a {
+      padding: 0.25rem 0.5rem;
+      border-radius: 999px;
+    }
+
+    nav a:hover {
+      background: var(--accent);
+      text-decoration: none;
+    }
+
+    .wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+      padding-top: calc(var(--header-height) + 1rem);
+    }
+
+    main {
+      width: 100%;
+    }
+
+    .layout {
+      display: block;
+    }
+
+    .section-heading {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 0 0 0.75rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid #000000;
+    }
+
+    .article-list-section {
+      margin-bottom: 2rem;
+    }
+
+    .article-list-header {
+      margin-bottom: 0.5rem;
+    }
+
+    .article-list-subtitle {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    #article-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .post-card {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.6rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    }
+
+    .post-thumb {
+      flex: 0 0 30%;
+      max-width: 140px;
+      overflow: hidden;
+      border-radius: 3px;
+    }
+
+    .post-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.25s ease;
+    }
+
+    .post-card:hover .post-thumb img {
+      transform: scale(1.03);
+    }
+
+    .post-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .post-title {
+      font-size: 1rem;
+      margin: 0 0 0.25rem;
+    }
+
+    .post-title a {
+      font-weight: 700;
+    }
+
+    .post-meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .post-excerpt {
+      font-size: 0.85rem;
+      margin: 0 0 0.4rem;
+    }
+
+    .post-actions {
+      font-size: 0.8rem;
+    }
+
+    .read-more {
+      font-weight: 600;
+    }
+
+    .read-more::after {
+      content: " »";
+    }
+
+    .article-detail-section {
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: #ffffff;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+
+    .article-placeholder {
+      margin: 0.5rem 0 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .detail-title {
+      font-size: 1.3rem;
+      margin: 0 0 0.4rem;
+    }
+
+    .detail-meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.8rem;
+    }
+
+    .detail-body p {
+      margin: 0 0 0.9rem;
+      font-size: 0.95rem;
+    }
+
+    .detail-image {
+      margin: 0.5rem auto 1rem;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .detail-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .quote-box {
+      margin: 1rem 0;
+      padding: 0.75rem 0.9rem;
+      background: var(--quote-bg);
+      border-left: 4px solid var(--quote-border);
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    .quote-line {
+      margin: 0 0 0.35rem;
+    }
+
+    .quote-line:last-child {
+      margin-bottom: 0;
+    }
+
+    .quote-tag {
+      font-weight: 700;
+      margin-right: 0.25rem;
+    }
+
+    .related-box {
+      margin-top: 1.2rem;
+      padding-top: 0.7rem;
+      border-top: 1px dashed var(--border);
+    }
+
+    .related-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin: 0 0 0.4rem;
+    }
+
+    .related-list {
+      list-style: square;
+      padding-left: 1.2rem;
+      margin: 0;
+      font-size: 0.9rem;
+    }
+
+    .related-list li {
+      margin-bottom: 0.2rem;
+    }
+
+    aside {
+      margin-top: 1.5rem;
+    }
+
+    .sidebar-block {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: #ffffff;
+      box-shadow: var(--shadow);
+      padding: 0.75rem 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .sidebar-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .ranking-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 0.85rem;
+      counter-reset: rank;
+    }
+
+    .ranking-list li {
+      margin-bottom: 0.35rem;
+      padding-left: 1.4rem;
+      position: relative;
+    }
+
+    .ranking-list li::before {
+      counter-increment: rank;
+      content: counter(rank) "位";
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-size: 0.75rem;
+      color: #cc0000;
+      font-weight: 700;
+    }
+
+    .ranking-list a {
+      display: inline-block;
+    }
+
+    .comments-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 0.8rem;
+    }
+
+    .comments-list li {
+      margin-bottom: 0.5rem;
+      border-bottom: 1px dotted #e0e0e0;
+      padding-bottom: 0.4rem;
+    }
+
+    .comment-user {
+      font-weight: 700;
+      margin-right: 0.25rem;
+    }
+
+    .comment-text {
+      color: var(--muted);
+    }
+
+    footer {
+      border-top: 1px solid #e5e5e5;
+      padding: 1.2rem 1rem 1.8rem;
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      background: #fafafa;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-nav {
+      margin-bottom: 0.4rem;
+    }
+
+    .footer-nav a {
+      margin-right: 0.8rem;
+    }
+
+    .footer-copy {
+      color: var(--muted);
+    }
+
+    @media (min-width: 768px) {
+      .post-card {
+        padding: 0.8rem;
+      }
+
+      .post-thumb {
+        flex: 0 0 26%;
+        max-width: 180px;
+      }
+
+      .detail-title {
+        font-size: 1.5rem;
+      }
+    }
+
+    @media (min-width: 960px) {
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 3fr) minmax(220px, 1fr);
+        gap: 1.5rem;
+        align-items: flex-start;
+      }
+
+      aside {
+        margin-top: 0;
+        position: sticky;
+        top: calc(var(--header-height) + 0.8rem);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="site-brand">
+        <div class="site-logo">MATOME</div>
+        <div class="site-title">まとめサイト風ブログ</div>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#top">トップ</a></li>
+          <li><a href="#article-detail">最新記事</a></li>
+          <li><a href="#sidebar-popular">人気</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrapper">
+    <div class="layout">
+      <main>
+        <section id="top" class="article-list-section">
+          <div class="article-list-header">
+            <h1 class="section-heading">話題まとめ一覧</h1>
+            <p class="article-list-subtitle">ニュース・SNSネタ・解説系の記事をゆるくまとめています。</p>
+          </div>
+          <div id="article-list"></div>
+        </section>
+
+        <section id="article-detail" class="article-detail-section">
+          <h2 class="detail-title">記事を選択してください</h2>
+          <p class="article-placeholder">上の一覧やサイドバーの人気記事から、読みたい記事タイトルをクリックするとここに本文が表示されます。</p>
+        </section>
+      </main>
+
+      <aside>
+        <div id="sidebar-popular" class="sidebar-block">
+          <h2 class="sidebar-title">人気記事ランキング</h2>
+          <ol id="popular-list" class="ranking-list"></ol>
+        </div>
+        <div class="sidebar-block">
+          <h2 class="sidebar-title">最新コメント</h2>
+          <ul id="comments-list" class="comments-list"></ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-nav">
+        <a href="#top">このサイトについて</a>
+        <a href="#top">お問い合わせ</a>
+        <a href="#top">プライバシーポリシー</a>
+      </div>
+      <div class="footer-copy">© 2025 まとめブログ風サンプル</div>
+    </div>
+  </footer>
+
+  <script>
+    var articles = [
+      {
+        id: "1",
+        title: "SNSで話題のあのニュースをざっくり解説してみた件",
+        date: "2025-12-01",
+        thumbnail: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80",
+        excerpt: "タイムラインを騒がせたあのニュース、ざっくりポイントだけ押さえたい人向けのゆるまとめ。",
+        paragraphs: [
+          "ここ数日、SNSのタイムラインをにぎわせているニュースがありますが「結局なにが起きたのかよくわからない」という声も多く見かけます。そこで、ざっくり流れだけを追いたい人向けに、要点を３ステップでまとめてみました。",
+          "まず押さえておきたいのは「いつ」「どこで」「誰が」「なにをしたのか」という基本の４ポイントです。一次情報の発信元や公式リリースを確認したうえで、それとは別にSNS上でどう受け取られたのかを見ると、温度差が見えてきます。",
+          "また、ハッシュタグを追っていると、感情的な意見と冷静な解説がごちゃまぜになって流れてくることがあります。情報の鮮度だけでなく「発信者がどんな立場なのか」を意識して読むことで、ニュースの輪郭が少しずつくっきりしてきます。",
+          "最終的に、自分はどう考えるのかを決めるためには、賛成・反対の両方の意見をいったん眺めてみるのがおすすめです。どちらにも一理ある場合がほとんどなので、白黒というより「どこまでなら許容できるか」というグラデーションで考えると、少し楽になります。"
+        ],
+        quoteLines: [
+          { tag: "◆", text: "とりあえずタイムラインが騒がしいので、まとめだけ読みたい民が続出。" },
+          { tag: "▶", text: "一次ソースを読む体力はないけど、流れだけ押さえておきたい勢にはちょうどいい長さ。" },
+          { tag: "名無し", text: "結局、落ち着いて読んでみると「思ったより普通の話だった」というオチ。" }
+        ],
+        image: "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80",
+        relatedIds: ["2", "3", "4"]
+      },
+      {
+        id: "2",
+        title: "バズったスレから見る「ちょっと役立つ」生活の知恵",
+        date: "2025-11-28",
+        thumbnail: "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=800&q=80",
+        excerpt: "地味だけど効く生活ハックを、バズったスレからピックアップして紹介。",
+        paragraphs: [
+          "とある掲示板のスレッドで「地味に人生が変わった生活の知恵」が大量に投下され、静かな盛り上がりを見せていました。どれも当たり前といえば当たり前なのですが、実際にやってみるとじわっと効いてくるものばかりです。",
+          "例えば、朝起きていきなりスマホを見る前に、カーテンを開けて深呼吸を一回するだけでも、体感として一日のスタートが少し変わります。習慣化するためには「やりたいこと」ではなく「すでにやっていること」にくっつけるのがコツのようです。",
+          "また、部屋の片づけに関しても「全部きれいにしよう」と思うと心が折れてしまうので、スレでは『床の見えているところから一畳分だけやる』というルールが推奨されていました。結果的に、ちいさな達成感を積み重ねる方が長続きするとのことです。"
+        ],
+        quoteLines: [
+          { tag: "◆", text: "一番すごいのは、どの知恵も今日から無料で試せるところ。" },
+          { tag: "引用", text: "「続けられる工夫こそが、真のライフハック」という名言がひっそり埋もれていた。" }
+        ],
+        image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
+        relatedIds: ["1", "5"]
+      },
+      {
+        id: "3",
+        title: "図でなんとなくわかる最新テックニュースまとめ",
+        date: "2025-11-20",
+        thumbnail: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
+        excerpt: "細かい専門用語は抜きにして、話題のテックニュースをざっくり図解イメージで整理。",
+        paragraphs: [
+          "最近のテック系ニュースは、略語と専門用語のオンパレードになりがちです。そこで、細かい仕組みよりも「結局なにがうれしいのか」にフォーカスして、ざっくりとイメージ重視で整理してみました。",
+          "ひとつめのポイントは、どのサービスも『時間の節約』か『手間の削減』のどちらか、あるいは両方を目指しているという点です。表向きのキャッチコピーはバラバラでも、ユーザーが体感するメリットは意外とシンプルだったりします。",
+          "ふたつめは、舞台裏で動いている仕組みはどんどん複雑になっているのに、ユーザーの操作はむしろ単純になっているという逆転現象です。ボタンひとつで完結するその裏側には、たくさんの自動化と調整が詰め込まれています。",
+          "最後に、テックニュースを追うときは「今すぐ使えるかどうか」だけでなく「２〜３年後の当たり前になりそうか」という視点で見ると、また違った面白さが見えてきます。未来のふつうを先取りする感覚で眺めてみるのもおすすめです。"
+        ],
+        quoteLines: [
+          { tag: "◆", text: "難しい単語が出てきたら、とりあえず『便利になるやつ』で一回ざっくり理解してもいい。" },
+          { tag: "名無し", text: "テックニュースは「自分の生活にどう関係するか」を考えながら読むと、急に身近になる。" }
+        ],
+        image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
+        relatedIds: ["1", "2", "4"]
+      },
+      {
+        id: "4",
+        title: "炎上しないためのSNSとのゆるい付き合い方メモ",
+        date: "2025-11-10",
+        thumbnail: "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?auto=format&fit=crop&w=800&q=80",
+        excerpt: "つい感情でポストしがちな人向けに、クールダウンのコツをざっくりまとめました。",
+        paragraphs: [
+          "SNSは手軽に発信できる一方で、感情の勢いだけで投稿してしまい、あとから後悔するケースも少なくありません。完全に失敗をゼロにすることは難しいですが、小さな工夫で炎上リスクをだいぶ下げることはできます。",
+          "まずおすすめなのは『送信ボタンを押す前に一度だけ深呼吸する』というシンプルなルールです。たった数秒でも、感情のピークを少しやり過ごすことで、言葉のトゲが丸くなることがあります。",
+          "また、批判的なことを書きたくなったときは、名前や固有名詞をいったん全部外しても意味が通るかを試してみるのもひとつの方法です。特定の誰かを攻撃しない形に言い換えられるなら、そのほうが余計な火種を生みにくくなります。",
+          "最終的には『自分が読み返したときに、少しだけ誇らしく思えるポストかどうか』という基準で判断すると、SNSとの距離感がほどよく保てるようになります。"
+        ],
+        quoteLines: [
+          { tag: "◆", text: "送信前の３秒ルールだけで、だいたいの事故は防げる説。" },
+          { tag: "▶", text: "いったん下書きに寝かせてから投稿する文化、もっと広がってほしい。" }
+        ],
+        image: "https://images.unsplash.com/photo-1517263662891-66c5c13a634b?auto=format&fit=crop&w=1200&q=80",
+        relatedIds: ["1", "3"]
+      },
+      {
+        id: "5",
+        title: "休日に読みたい“ゆるめ解説記事”の歩き方",
+        date: "2025-10-25",
+        thumbnail: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80",
+        excerpt: "難しいテーマも“ゆる解説”から入ると、ちょっとだけ世界が広く見えてくるかもしれない話。",
+        paragraphs: [
+          "最近は、難しそうなテーマをやわらかくかみくだいた“ゆるめ解説記事”が増えてきました。専門書を一冊読むほどの気力はないけれど、なんとなく知っておきたい……という休日の頭にはちょうどいい入口です。",
+          "ポイントは「全部理解しようとしないこと」です。知らない用語が出てきたら、そのまま読み流してもかまいません。大事なのは、ざっくりとした雰囲気や構図だけでも持ち帰ることです。",
+          "もし少しでも引っかかるテーマがあったら、そのキーワードで検索してみたり、別の人の解説を探してみると、知識の輪がじわっと広がっていきます。最初から正解を求めるよりも、気になったものを少しずつ追いかける方が長続きします。",
+          "解説記事は、読む人の生活と地続きで語られているものほど、心に残ります。自分の経験と重ね合わせながら読むことで、ちょっとした発見が日常に混ざりやすくなります。"
+        ],
+        quoteLines: [
+          { tag: "◆", text: "わからない部分に付箋を貼るくらいの気持ちで、気楽に読み進めるのがちょうどいい。" },
+          { tag: "引用", text: "「全部わかったらラッキー、半分わかれば御の字」というくらいの温度感で読むのがおすすめ。" }
+        ],
+        image: "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?auto=format&fit=crop&w=1200&q=80",
+        relatedIds: ["2", "3"]
+      }
+    ];
+
+    var popularOrder = ["3", "1", "2", "4", "5"];
+
+    var comments = [
+      { user: "名無しさん", text: "ふわっと全体がつかめて助かるまとめでした。" },
+      { user: "通りすがり", text: "テックニュースの記事、図解イメージが頭に浮かびやすくて良き。" },
+      { user: "名無しの読者", text: "SNSとの付き合い方の記事、もっと早く読みたかった。" },
+      { user: "まとめ民A", text: "休日のゆる解説シリーズ、続編も期待してます。" },
+      { user: "ROM専", text: "バズったスレの生活の知恵、こっそり試してます。" }
+    ];
+
+    function renderArticleList() {
+      var listEl = document.getElementById("article-list");
+      listEl.innerHTML = "";
+      articles.forEach(function (article) {
+        var card = document.createElement("article");
+        card.className = "post-card";
+
+        var thumb = document.createElement("div");
+        thumb.className = "post-thumb";
+        var img = document.createElement("img");
+        img.src = article.thumbnail;
+        img.alt = article.title;
+        thumb.appendChild(img);
+
+        var content = document.createElement("div");
+        content.className = "post-content";
+
+        var titleEl = document.createElement("h2");
+        titleEl.className = "post-title";
+        var titleLink = document.createElement("a");
+        titleLink.href = "#article-detail";
+        titleLink.textContent = article.title;
+        titleLink.setAttribute("data-article-id", article.id);
+        titleEl.appendChild(titleLink);
+
+        var meta = document.createElement("div");
+        meta.className = "post-meta";
+        meta.textContent = "投稿日: " + article.date;
+
+        var excerpt = document.createElement("p");
+        excerpt.className = "post-excerpt";
+        excerpt.textContent = article.excerpt;
+
+        var actions = document.createElement("div");
+        actions.className = "post-actions";
+        var moreLink = document.createElement("a");
+        moreLink.href = "#article-detail";
+        moreLink.className = "read-more";
+        moreLink.textContent = "続きを読む";
+        moreLink.setAttribute("data-article-id", article.id);
+        actions.appendChild(moreLink);
+
+        content.appendChild(titleEl);
+        content.appendChild(meta);
+        content.appendChild(excerpt);
+        content.appendChild(actions);
+
+        card.appendChild(thumb);
+        card.appendChild(content);
+
+        listEl.appendChild(card);
+      });
+    }
+
+    function renderPopular() {
+      var popularEl = document.getElementById("popular-list");
+      popularEl.innerHTML = "";
+      popularOrder.forEach(function (id) {
+        var article = articles.find(function (a) { return a.id === id; });
+        if (!article) return;
+        var li = document.createElement("li");
+        var link = document.createElement("a");
+        link.href = "#article-detail";
+        link.textContent = article.title;
+        link.setAttribute("data-article-id", article.id);
+        li.appendChild(link);
+        popularEl.appendChild(li);
+      });
+    }
+
+    function renderComments() {
+      var commentsEl = document.getElementById("comments-list");
+      commentsEl.innerHTML = "";
+      comments.forEach(function (c) {
+        var li = document.createElement("li");
+        var user = document.createElement("span");
+        user.className = "comment-user";
+        user.textContent = c.user + ":";
+        var text = document.createElement("span");
+        text.className = "comment-text";
+        text.textContent = " " + c.text;
+        li.appendChild(user);
+        li.appendChild(text);
+        commentsEl.appendChild(li);
+      });
+    }
+
+    function showArticle(id) {
+      var article = articles.find(function (a) { return a.id === id; });
+      if (!article) return;
+      var detailEl = document.getElementById("article-detail");
+      detailEl.innerHTML = "";
+
+      var titleEl = document.createElement("h2");
+      titleEl.className = "detail-title";
+      titleEl.textContent = article.title;
+
+      var meta = document.createElement("div");
+      meta.className = "detail-meta";
+      meta.textContent = "投稿日: " + article.date;
+
+      var body = document.createElement("div");
+      body.className = "detail-body";
+
+      article.paragraphs.forEach(function (pText, index) {
+        var p = document.createElement("p");
+        p.textContent = pText;
+        body.appendChild(p);
+        if (index === 0 && article.image) {
+          var figure = document.createElement("div");
+          figure.className = "detail-image";
+          var img = document.createElement("img");
+          img.src = article.image;
+          img.alt = article.title;
+          figure.appendChild(img);
+          body.appendChild(figure);
+        }
+      });
+
+      var quoteBox = document.createElement("div");
+      quoteBox.className = "quote-box";
+      article.quoteLines.forEach(function (line) {
+        var p = document.createElement("p");
+        p.className = "quote-line";
+        var tagSpan = document.createElement("span");
+        tagSpan.className = "quote-tag";
+        tagSpan.textContent = line.tag;
+        var textSpan = document.createElement("span");
+        textSpan.textContent = line.text;
+        p.appendChild(tagSpan);
+        p.appendChild(textSpan);
+        quoteBox.appendChild(p);
+      });
+
+      var relatedBox = document.createElement("div");
+      relatedBox.className = "related-box";
+      var relatedTitle = document.createElement("div");
+      relatedTitle.className = "related-title";
+      relatedTitle.textContent = "関連記事リンク";
+      relatedBox.appendChild(relatedTitle);
+
+      var relatedList = document.createElement("ul");
+      relatedList.className = "related-list";
+      article.relatedIds.forEach(function (rid) {
+        var related = articles.find(function (a) { return a.id === rid; });
+        if (!related) return;
+        var li = document.createElement("li");
+        var link = document.createElement("a");
+        link.href = "#article-detail";
+        link.textContent = related.title;
+        link.setAttribute("data-article-id", related.id);
+        li.appendChild(link);
+        relatedList.appendChild(li);
+      });
+      if (relatedList.children.length === 0) {
+        var li = document.createElement("li");
+        li.textContent = "関連記事はまだありません。";
+        relatedList.appendChild(li);
+      }
+      relatedBox.appendChild(relatedList);
+
+      detailEl.appendChild(titleEl);
+      detailEl.appendChild(meta);
+      detailEl.appendChild(body);
+      detailEl.appendChild(quoteBox);
+      detailEl.appendChild(relatedBox);
+
+      detailEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function setupDelegates() {
+      var listEl = document.getElementById("article-list");
+      var popularEl = document.getElementById("popular-list");
+      var detailEl = document.getElementById("article-detail");
+
+      function handleClick(e) {
+        var target = e.target.closest("[data-article-id]");
+        if (!target) return;
+        e.preventDefault();
+        var id = target.getAttribute("data-article-id");
+        showArticle(id);
+      }
+
+      listEl.addEventListener("click", handleClick);
+      popularEl.addEventListener("click", handleClick);
+      detailEl.addEventListener("click", handleClick);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      renderArticleList();
+      renderPopular();
+      renderComments();
+      setupDelegates();
+    });
+  </script>
+</body>
+</html>
