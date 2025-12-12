@@ -1,59 +1,63 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>MATOME - まとめサイト風ブログ</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>MATOME | まとめサイト風ブログ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="話題のニュース・SNSネタ・解説記事をゆるくまとめる個人ブログ。" />
   <style>
     :root {
-      --bg-color: #f5f6f8;
-      --card-bg: #ffffff;
-      --accent: #1976d2;
-      --accent-soft: #e3f2fd;
-      --text-main: #222222;
-      --text-sub: #666666;
-      --border-soft: #dddddd;
-      --link: #1565c0;
-      --link-hover: #0d47a1;
-      --badge: #ff7043;
+      --bg: #f5f6f8;
+      --bg-card: #ffffff;
+      --border: #e1e4e8;
+      --text: #222222;
+      --muted: #666666;
+      --accent: #0070c9;
+      --accent-soft: #e6f2ff;
+      --accent-dark: #004a80;
     }
 
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
     }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", "Meiryo", sans-serif;
-      background: var(--bg-color);
-      color: var(--text-main);
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      background: var(--bg);
+      color: var(--text);
       line-height: 1.6;
     }
 
     a {
-      color: var(--link);
+      color: var(--accent);
       text-decoration: none;
+      transition: color 0.15s ease, background-color 0.15s ease;
     }
 
     a:hover {
-      color: var(--link-hover);
-      text-decoration: underline;
+      color: var(--accent-dark);
     }
 
-    /* ヘッダー */
+    img {
+      max-width: 100%;
+      display: block;
+    }
 
+    /* ===== Header ===== */
     .site-header {
       position: sticky;
       top: 0;
-      z-index: 1000;
-      background: linear-gradient(90deg, #111827, #1f2933);
-      color: #ffffff;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      z-index: 100;
+      background: #ffffffcc;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     }
 
     .header-inner {
-      max-width: 1160px;
+      max-width: 1080px;
       margin: 0 auto;
       padding: 10px 16px;
       display: flex;
@@ -62,968 +66,676 @@
       gap: 16px;
     }
 
-    .logo {
+    .site-logo {
       display: flex;
-      align-items: baseline;
-      gap: 8px;
+      align-items: center;
+      gap: 12px;
     }
 
-    .logo-main {
-      font-size: 1.4rem;
+    .logo-badge {
+      border: 2px solid var(--text);
+      border-radius: 999px;
+      padding: 4px 12px;
       font-weight: 700;
-      letter-spacing: 0.08em;
-      background: #ffffff;
-      color: #111827;
+      letter-spacing: 0.05em;
+      font-size: 18px;
+    }
+
+    .site-title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .site-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .site-tagline {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .site-nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav-link {
       padding: 4px 10px;
       border-radius: 999px;
     }
 
-    .logo-sub {
-      font-size: 0.78rem;
-      opacity: 0.8;
+    .nav-link:hover {
+      background: var(--accent-soft);
     }
 
-    .header-nav {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.9rem;
-    }
-
-    .header-nav a {
-      color: #e5e7eb;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      text-decoration: none;
-    }
-
-    .header-nav a:hover {
-      border-color: rgba(255,255,255,0.3);
-      background: rgba(15,23,42,0.8);
-    }
-
-    .header-tagline {
-      font-size: 0.78rem;
-      color: #cbd5f5;
-      display: none;
-    }
-
-    /* レイアウト */
-
+    /* ===== Layout ===== */
     .page {
-      max-width: 1160px;
-      margin: 16px auto 40px;
-      padding: 0 16px 40px;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 16px;
     }
 
-    .page-main {
-      display: grid;
-      grid-template-columns: minmax(0, 2.4fr) minmax(260px, 1fr);
-      gap: 24px;
+    .breadcrumbs {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 4px;
     }
 
-    /* セクションタイトル */
-
-    .section-title-row {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      margin-bottom: 12px;
-      padding: 4px 4px 0;
-    }
-
-    .section-title {
-      font-size: 1.2rem;
+    .page-title {
+      font-size: 22px;
       font-weight: 700;
-      border-left: 4px solid var(--accent);
-      padding-left: 10px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--text);
+      margin-bottom: 8px;
     }
 
-    .section-sub {
-      font-size: 0.8rem;
-      color: var(--text-sub);
+    .page-lead {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
     }
 
-    /* カテゴリフィルタ（見た目だけ） */
+    .layout-main {
+      display: grid;
+      grid-template-columns: minmax(0, 2.1fr) minmax(260px, 0.95fr);
+      gap: 16px;
+      align-items: flex-start;
+    }
 
-    .category-filter {
+    /* ===== Article list ===== */
+    .card {
+      background: var(--bg-card);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 16px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    }
+
+    .article-card {
+      display: grid;
+      grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+      gap: 16px;
+      align-items: stretch;
+      margin-bottom: 12px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+    }
+
+    .article-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+      border-color: #d0d7de;
+    }
+
+    .article-thumb {
+      border-radius: 8px;
+      overflow: hidden;
+      height: 150px;
+    }
+
+    .article-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .article-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .article-meta {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 14px;
-      padding: 0 4px;
-      font-size: 0.82rem;
+      align-items: center;
+      font-size: 12px;
+      color: var(--muted);
     }
 
-    .category-chip {
+    .badge-category {
+      background: var(--accent-soft);
+      color: var(--accent-dark);
       border-radius: 999px;
-      padding: 4px 10px;
-      border: 1px solid #cbd5e1;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge-comments {
+      border-radius: 999px;
+      padding: 2px 8px;
+      border: 1px solid var(--border);
+      font-size: 11px;
+    }
+
+    .article-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .article-excerpt {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .article-footer {
+      margin-top: auto;
+      font-size: 13px;
+    }
+
+    .read-more {
+      font-weight: 600;
+      position: relative;
+      padding-right: 16px;
+    }
+
+    .read-more::after {
+      content: "›";
+      position: absolute;
+      right: 2px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+    }
+
+    /* Pagination (ダミー) */
+    .pagination {
+      display: flex;
+      justify-content: flex-end;
+      gap: 4px;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+
+    .page-link {
+      border-radius: 4px;
+      padding: 4px 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+    }
+
+    .page-link.current {
+      font-weight: 700;
+      color: var(--accent-dark);
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    /* ===== Sidebar ===== */
+    .sidebar-section-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      border-left: 3px solid var(--accent);
+      padding-left: 6px;
+    }
+
+    .rank-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 13px;
+    }
+
+    .rank-item {
+      display: flex;
+      gap: 6px;
+      padding: 4px 0;
+      border-bottom: 1px dashed #e0e0e0;
+    }
+
+    .rank-badge {
+      font-weight: 700;
+      color: #d70000;
+      min-width: 26px;
+    }
+
+    .rank-link {
+      flex: 1;
+    }
+
+    .rank-link span {
+      display: inline-block;
+    }
+
+    .comment-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .comment-item + .comment-item {
+      margin-top: 6px;
+      border-top: 1px dashed #eee;
+      padding-top: 6px;
+    }
+
+    .comment-name {
+      font-weight: 600;
+      margin-right: 4px;
+    }
+
+    /* ===== Article template ===== */
+    .article-template {
+      margin-top: 24px;
+    }
+
+    .article-template-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .article-template-meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .article-template-body {
+      font-size: 14px;
+    }
+
+    .quote-box {
+      margin: 16px 0;
+      padding: 10px 12px;
+      border-left: 4px solid #ff9800;
+      background: #fffaf2;
+      font-size: 13px;
+    }
+
+    .quote-label {
+      font-weight: 700;
+      color: #ff9800;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+
+    .related-list {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 0;
+      font-size: 13px;
+    }
+
+    .related-list li + li {
+      margin-top: 4px;
+    }
+
+    /* ===== Footer ===== */
+    .site-footer {
+      margin-top: 32px;
+      border-top: 1px solid var(--border);
+      padding: 12px 16px 20px;
+      font-size: 12px;
+      color: var(--muted);
       background: #ffffff;
-      color: #374151;
+    }
+
+    .footer-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-nav {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .footer-nav a {
+      color: var(--muted);
+    }
+
+    .footer-nav a:hover {
+      color: var(--accent-dark);
+    }
+
+    /* ===== Back to top button ===== */
+    .back-to-top {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.18);
       cursor: pointer;
+      display: none;
+      z-index: 150;
+    }
+
+    .back-to-top.show {
       display: inline-flex;
       align-items: center;
       gap: 4px;
     }
 
-    .category-chip span {
-      font-size: 0.7rem;
-      color: #9ca3af;
-    }
-
-    .category-chip.active {
-      background: var(--accent);
-      color: #ffffff;
-      border-color: var(--accent);
-    }
-
-    /* 記事リスト */
-
-    .card {
-      background: var(--card-bg);
-      border-radius: 10px;
-      box-shadow: 0 1px 4px rgba(15,23,42,0.10);
-      border: 1px solid rgba(148,163,184,0.25);
-    }
-
-    .post-card {
-      display: grid;
-      grid-template-columns: 180px minmax(0,1fr);
-      gap: 16px;
-      padding: 16px;
-      margin-bottom: 14px;
-      transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, border-color 0.12s ease-out;
-    }
-
-    .post-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(15,23,42,0.18);
-      border-color: var(--accent-soft);
-    }
-
-    .post-thumb {
-      width: 100%;
-      height: 120px;
-      object-fit: cover;
-      border-radius: 6px;
-    }
-
-    .post-main {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .post-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      font-size: 0.78rem;
-      color: var(--text-sub);
-      align-items: center;
-      margin-bottom: 4px;
-    }
-
-    .badge-category {
-      font-size: 0.72rem;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      color: #0d47a1;
-    }
-
-    .badge-new {
-      font-size: 0.72rem;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: var(--badge);
-      color: #ffffff;
-      font-weight: 600;
-    }
-
-    .post-title-link {
-      font-size: 1.02rem;
-      font-weight: 700;
-      color: var(--text-main);
-      text-decoration: none;
-    }
-
-    .post-title-link:hover {
-      color: var(--link-hover);
-      text-decoration: underline;
-    }
-
-    .post-desc {
-      font-size: 0.9rem;
-      color: var(--text-sub);
-      margin-top: 2px;
-      margin-bottom: 6px;
-    }
-
-    .post-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 2px;
-    }
-
-    .tag-chip {
-      font-size: 0.7rem;
-      padding: 2px 6px;
-      border-radius: 999px;
-      border: 1px solid #e5e7eb;
-      background: #f9fafb;
-      color: #4b5563;
-    }
-
-    .post-footer {
-      margin-top: auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.8rem;
-      color: #9ca3af;
-    }
-
-    .read-more-btn {
-      border: none;
-      background: transparent;
-      color: var(--link);
-      cursor: pointer;
-      padding: 0;
-      font-size: 0.85rem;
-    }
-
-    .read-more-btn:hover {
-      color: var(--link-hover);
-      text-decoration: underline;
-    }
-
-    .post-list-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 10px;
-      font-size: 0.8rem;
-      color: var(--text-sub);
-      padding: 4px 4px 0;
-    }
-
-    .pagination {
-      display: flex;
-      gap: 6px;
-    }
-
-    .pagination button {
-      border-radius: 6px;
-      border: 1px solid #cbd5e1;
-      background: #ffffff;
-      padding: 4px 8px;
-      font-size: 0.78rem;
-      cursor: pointer;
-    }
-
-    .pagination button:hover {
-      background: #e5f1ff;
-      border-color: var(--accent);
-    }
-
-    /* サイドバー */
-
-    .sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .sidebar-section {
-      padding: 12px 14px;
-    }
-
-    .sidebar-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-      border-left: 3px solid var(--accent);
-      padding-left: 8px;
-    }
-
-    .ranking-list {
-      list-style: none;
-      padding-left: 0;
-      margin: 6px 0 0;
-      font-size: 0.86rem;
-    }
-
-    .ranking-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 7px;
-      padding: 6px 0;
-      border-bottom: 1px dashed #e5e7eb;
-    }
-
-    .rank-number {
-      font-size: 0.78rem;
-      color: #ef4444;
-      min-width: 2.2em;
-    }
-
-    .ranking-link {
-      border: none;
-      background: transparent;
-      padding: 0;
-      font: inherit;
-      text-align: left;
-      color: var(--link);
-      cursor: pointer;
-    }
-
-    .ranking-link:hover {
-      color: var(--link-hover);
-      text-decoration: underline;
-    }
-
-    .comment-list {
-      list-style: none;
-      padding-left: 0;
-      margin-top: 4px;
-      font-size: 0.8rem;
-      color: var(--text-sub);
-    }
-
-    .comment-item {
-      padding: 6px 0;
-      border-bottom: 1px dashed #e5e7eb;
-    }
-
-    .comment-name {
-      font-weight: 600;
-      font-size: 0.78rem;
-      color: #4b5563;
-    }
-
-    .comment-body {
-      margin-top: 2px;
-    }
-
-    .profile-box {
-      font-size: 0.82rem;
-      color: var(--text-sub);
-    }
-
-    .profile-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: #4b5563;
-      margin-top: 4px;
-    }
-
-    /* 記事詳細 */
-
-    .detail-wrapper {
-      margin-top: 28px;
-    }
-
-    .detail-header {
-      padding: 18px 18px 10px;
-    }
-
-    .detail-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      font-size: 0.8rem;
-      color: var(--text-sub);
-      margin-top: 6px;
-    }
-
-    .detail-title {
-      font-size: 1.4rem;
-      font-weight: 700;
-      line-height: 1.5;
-    }
-
-    .detail-body {
-      padding: 0 18px 16px;
-      font-size: 0.95rem;
-      color: #374151;
-    }
-
-    .detail-body p {
-      margin-bottom: 10px;
-    }
-
-    .detail-image-wrap {
-      margin: 4px 18px 12px;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .detail-image {
-      width: 100%;
-      max-height: 260px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .quote-box {
-      margin: 8px 18px 12px;
-      padding: 12px;
-      background: #f9fafb;
-      border-left: 4px solid #9ca3af;
-      font-size: 0.9rem;
-      color: #4b5563;
-    }
-
-    .quote-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: #6b7280;
-      margin-bottom: 4px;
-      display: inline-block;
-    }
-
-    .detail-tags {
-      padding: 0 18px 14px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      font-size: 0.78rem;
-    }
-
-    .detail-tags .tag-chip {
-      background: #eef2ff;
-      border-color: #c7d2fe;
-      color: #4338ca;
-    }
-
-    .related-box {
-      border-top: 1px solid #e5e7eb;
-      padding: 10px 18px 14px;
-      font-size: 0.88rem;
-      background: #fafafa;
-      border-radius: 0 0 10px 10px;
-    }
-
-    .related-title {
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .related-list {
-      list-style: none;
-      padding-left: 0;
-      margin: 0;
-    }
-
-    .related-list li {
-      padding: 3px 0;
-    }
-
-    /* フッター */
-
-    .site-footer {
-      border-top: 1px solid #e5e7eb;
-      padding-top: 10px;
-      margin-top: 26px;
-      font-size: 0.8rem;
-      color: var(--text-sub);
-      text-align: center;
-    }
-
-    .footer-links {
-      margin-bottom: 6px;
-    }
-
-    .footer-links a {
-      margin: 0 6px;
-      text-decoration: none;
-    }
-
-    .footer-links a:hover {
-      text-decoration: underline;
-    }
-
-    /* トップへ戻るボタン */
-
-    .back-to-top {
-      position: fixed;
-      right: 16px;
-      bottom: 18px;
-      width: 36px;
-      height: 36px;
-      border-radius: 999px;
-      border: none;
-      background: #111827;
-      color: #ffffff;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.35);
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.18s ease-out, visibility 0.18s ease-out, transform 0.18s ease-out;
-      z-index: 999;
-    }
-
-    .back-to-top.visible {
-      opacity: 0.96;
-      visibility: visible;
-      transform: translateY(0);
-    }
-
-    .back-to-top:hover {
-      opacity: 1;
-      transform: translateY(-2px);
-    }
-
-    /* レスポンシブ */
-
-    @media (max-width: 960px) {
-      .page-main {
-        grid-template-columns: minmax(0,1fr);
-      }
-      .sidebar {
-        order: -1;
-      }
-      .site-header {
-        position: sticky;
-      }
+    /* ===== Responsive ===== */
+    @media (max-width: 799px) {
       .header-inner {
-        flex-wrap: wrap;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
       }
-      .header-tagline {
-        display: block;
-      }
-    }
 
-    @media (max-width: 720px) {
-      .post-card {
-        grid-template-columns: minmax(0,1fr);
+      .layout-main {
+        grid-template-columns: minmax(0, 1fr);
       }
-      .post-thumb {
-        height: 170px;
+
+      .article-card {
+        grid-template-columns: minmax(0, 1fr);
       }
-      .header-nav {
-        display: none;
+
+      .article-thumb {
+        height: 180px;
+      }
+
+      .site-footer {
+        padding-inline: 12px;
+      }
+
+      .page {
+        padding-inline: 12px;
       }
     }
 
     @media (max-width: 480px) {
-      .page {
-        padding: 0 10px 40px;
+      .logo-badge {
+        font-size: 16px;
+        padding-inline: 10px;
       }
-      .post-card {
-        padding: 12px;
+      .site-title {
+        font-size: 16px;
       }
-      .detail-header, .detail-body, .detail-image-wrap, .quote-box, .detail-tags, .related-box {
-        padding-left: 12px;
-        padding-right: 12px;
-        margin-left: 0;
-        margin-right: 0;
+      .page-title {
+        font-size: 20px;
       }
     }
   </style>
 </head>
-<body>
-  <header class="site-header" id="top">
+<body id="top">
+  <header class="site-header">
     <div class="header-inner">
-      <div class="logo">
-        <div class="logo-main">MATOME</div>
-        <div class="logo-sub">話題のニュース・SNSネタをゆるっと解説</div>
+      <div class="site-logo">
+        <div class="logo-badge">MATOME</div>
+        <div class="site-title-block">
+          <div class="site-title">まとめサイト風ブログ</div>
+          <div class="site-tagline">ニュース・SNSネタ・2chっぽい話題を、ゆるく一望できる場所。</div>
+        </div>
       </div>
-      <nav class="header-nav">
-        <a href="#top">トップ</a>
-        <a href="#article-list">まとめ一覧</a>
-        <a href="#article-detail">今日のピックアップ</a>
-        <a href="#about">このサイトについて</a>
+      <nav class="site-nav">
+        <a href="#top" class="nav-link">トップ</a>
+        <a href="#latest" class="nav-link">最新記事</a>
+        <a href="#article-template" class="nav-link">記事テンプレ</a>
+        <a href="#footer" class="nav-link">このサイトについて</a>
       </nav>
-      <div class="header-tagline">
-        気になった話題を「ざっくり理解できる」まとめブログ。
-      </div>
     </div>
   </header>
 
   <main class="page">
-    <section class="page-main">
-      <!-- メインカラム -->
-      <div>
-        <div class="section-title-row">
-          <h2 class="section-title">話題まとめ一覧</h2>
-          <div class="section-sub">ニュース・SNSネタ・解説系の記事をゆるくまとめています。</div>
+    <div class="breadcrumbs">トップ &gt; 話題まとめ一覧</div>
+    <h1 class="page-title" id="latest">話題まとめ一覧</h1>
+    <p class="page-lead">ニュース・SNSネタ・解説系の記事をゆるくまとめています。気になる記事をクリックして、ざっくり概要だけ拾っていくスタイル。</p>
+
+    <div class="layout-main">
+      <!-- ===== Main column ===== -->
+      <section id="article-list">
+        <!-- JSで記事カードを挿入 -->
+      </section>
+
+      <!-- ===== Sidebar ===== -->
+      <aside>
+        <div class="card">
+          <h2 class="sidebar-section-title">人気記事ランキング</h2>
+          <ol class="rank-list" id="popular-list">
+            <!-- JSで挿入 -->
+          </ol>
         </div>
 
-        <div class="category-filter">
-          <button class="category-chip active" data-category="all">すべて<span>ALL</span></button>
-          <button class="category-chip" data-category="news">ニュース<span>NEWS</span></button>
-          <button class="category-chip" data-category="sns">SNSネタ<span>SNS</span></button>
-          <button class="category-chip" data-category="lifehack">暮らしの知恵<span>LIFE</span></button>
-          <button class="category-chip" data-category="tech">テック解説<span>TECH</span></button>
-        </div>
-
-        <div id="article-list"></div>
-
-        <div class="post-list-footer">
-          <div>※ すべてダミー記事です。実運用時はここを差し替えてください。</div>
-          <div class="pagination">
-            <button type="button">前のページ</button>
-            <button type="button">次のページ</button>
-          </div>
-        </div>
-
-        <!-- 記事詳細 -->
-        <section class="detail-wrapper" id="article-detail">
-          <div class="section-title-row">
-            <h2 class="section-title">ピックアップ記事</h2>
-            <div class="section-sub">サイドバーや一覧からクリックするとここに表示されます。</div>
-          </div>
-
-          <article class="card">
-            <header class="detail-header">
-              <div class="badge-category" id="detail-category">カテゴリー</div>
-              <h1 class="detail-title" id="detail-title">記事タイトルが入ります</h1>
-              <div class="detail-meta">
-                <span id="detail-date">2025-12-01</span>
-                <span>／</span>
-                <span id="detail-readtime">約5分で読める</span>
-              </div>
-            </header>
-
-            <div class="detail-image-wrap">
-              <img src="" alt="" id="detail-image" class="detail-image">
-            </div>
-
-            <div class="quote-box">
-              <div class="quote-label">2ちゃん風 一言まとめ</div>
-              <div id="detail-quote">
-                なんか難しそうに見えるニュースを、ざっくり一言で言うとこういう話だよ、というダミーテキスト。
-              </div>
-            </div>
-
-            <div class="detail-body" id="detail-body">
-              <p>ここに本文のダミーテキストが入ります。実際に記事を公開するときは、Markdown などで用意した文章をこの HTML に貼り付けて使う想定です。</p>
-              <p>前半では「何が起きたのか」を時系列でざっくり追いかけて、後半で「結局どういう意味があるの？」というポイントを解説するような構成にしておくと、まとめサイトっぽく読みやすくなります。</p>
-              <p>引用元のリンクや、元スレッドの URL などもここに整理しておくと、情報の出どころが分かりやすくて親切です。</p>
-            </div>
-
-            <div class="detail-tags" id="detail-tags"></div>
-
-            <div class="related-box">
-              <div class="related-title">関連記事</div>
-              <ul class="related-list" id="related-list"></ul>
-            </div>
-          </article>
-        </section>
-      </div>
-
-      <!-- サイドバー -->
-      <aside class="sidebar">
-        <section class="card sidebar-section">
-          <h3 class="sidebar-title">人気記事ランキング</h3>
-          <ol class="ranking-list" id="ranking-list"></ol>
-        </section>
-
-        <section class="card sidebar-section">
-          <h3 class="sidebar-title">最新コメント</h3>
+        <div class="card" style="margin-top:12px;">
+          <h2 class="sidebar-section-title">最新コメント</h2>
           <ul class="comment-list">
             <li class="comment-item">
-              <div class="comment-name">名無しの読者：</div>
-              <div class="comment-body">ざっくり全体がつかめて助かるまとめでした。</div>
+              <span class="comment-name">名無しの読者</span>
+              <span>：図でなんとなくわかるテックニュースまとめ、助かった。</span>
             </li>
             <li class="comment-item">
-              <div class="comment-name">通りすがり：</div>
-              <div class="comment-body">テック系の記事、図解イメージが頭に浮かびやすくて良き。</div>
+              <span class="comment-name">通りすがり</span>
+              <span>：バズったスレの「生活の知恵」シリーズ、もっと読みたい。</span>
             </li>
             <li class="comment-item">
-              <div class="comment-name">SNS沼の人：</div>
-              <div class="comment-body">元スレまでリンクがあるの神。あとでゆっくり読む。</div>
+              <span class="comment-name">SNS疲れ気味さん</span>
+              <span>：タイムライン追う元気ないので、ここでざっと流れ追えるの助かる。</span>
             </li>
           </ul>
-        </section>
-
-        <section class="card sidebar-section" id="about">
-          <h3 class="sidebar-title">このサイトについて</h3>
-          <div class="profile-box">
-            <p>ニュース記事・SNSでバズったスレ・ちょっと役立つ生活ハックなどを、「とりあえず雰囲気だけでも掴みたい人」向けにざっくり整理する個人ブログです。</p>
-            <p class="profile-label">運営スタンス</p>
-            <p>・難しい話はなるべく図解イメージで説明<br>
-               ・元ネタへのリンクはきちんと貼る<br>
-               ・コメント欄は別サービスで運用（予定）
-            </p>
-          </div>
-        </section>
+        </div>
       </aside>
-    </section>
+    </div>
 
-    <footer class="site-footer">
-      <div class="footer-links">
-        <a href="#top">トップへ</a>｜
-        <a href="#article-list">記事一覧</a>｜
-        <a href="#about">このサイトについて</a>
+    <!-- ===== Article template ===== -->
+    <section id="article-template" class="article-template card">
+      <h2 class="article-template-title">【テンプレ】SNSで話題のあのニュースをざっくり解説してみた件</h2>
+      <div class="article-template-meta">投稿日：2025-12-01 ／ カテゴリ：ニュース解説</div>
+
+      <div class="article-template-body">
+        <p>ここは個別記事ページ用のテンプレートです。実際の運用では、ここをコピペして別HTMLにしたり、ブログサービス側の記事本文として使ったりします。</p>
+
+        <p>本文は、「何が起きたのか」「なぜ話題なのか」「ざっくりどう理解しておけばいいか」の3ブロックくらいに分けると、まとめサイトっぽい読み心地になります。</p>
+
+        <div class="quote-box">
+          <div class="quote-label">2ch風レス引用</div>
+          <p>名無しの〇〇さん：<br>
+          「いやこれ、冷静に考えたらこうなるの当たり前なんよな……」</p>
+          <p>別の名無しさん：<br>
+          「ネットの一部だけ切り抜いた情報を信じると、だいたい話がややこしくなるやつ」</p>
+        </div>
+
+        <p>本文中に適当に画像を挿入したいときは、Unsplash のダミー画像を使うと、雰囲気がそれっぽくなります。</p>
+
+        <figure style="margin:16px 0;">
+          <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80" alt="イメージ画像：パソコンとニュース" />
+          <figcaption style="font-size:12px;color:var(--muted);margin-top:4px;">▲ なんとなく「ITニュース解説っぽい」雰囲気のイメージ画像（Unsplash）。</figcaption>
+        </figure>
+
+        <p>最後に「ざっくりポイント」や「このニュースから学べること」を箇条書きにして締めると、読者がスクロールしてざっと見るだけでも内容が頭に入りやすくなります。</p>
+
+        <h3 style="font-size:15px;margin-top:16px;">ざっくりポイント</h3>
+        <ul>
+          <li>タイムラインを全部追わなくても、重要な流れだけ押さえられるようにまとめる。</li>
+          <li>感想やツッコミは、本文の最後に「管理人のひとこと」として1〜2行だけ添える。</li>
+          <li>リンク元・一次情報は、できるだけ本文末尾にまとめて貼っておく。</li>
+        </ul>
+
+        <h3 style="font-size:15px;margin-top:16px;">関連記事</h3>
+        <ul class="related-list">
+          <li><a href="#top">【まとめ】バズったスレから見る「ちょっと役立つ」生活の知恵</a></li>
+          <li><a href="#top">図でなんとなくわかる最新テックニュースまとめ</a></li>
+          <li><a href="#top">SNS疲れした人向け「ゆるく情報を追う」ための小技集</a></li>
+        </ul>
       </div>
-      <div>© 2025 MATOME Blog. All dummy contents for practice.</div>
-    </footer>
+    </section>
   </main>
 
-  <button type="button" class="back-to-top" id="backToTop" aria-label="ページ上部へ">
-    ↑
+  <footer class="site-footer" id="footer">
+    <div class="footer-inner">
+      <div>© 2025 MATOME / 個人ゆるまとめブログ</div>
+      <nav class="footer-nav">
+        <a href="#top">トップに戻る</a>
+        <a href="#latest">最新記事</a>
+        <a href="#article-template">記事テンプレ</a>
+      </nav>
+    </div>
+  </footer>
+
+  <button class="back-to-top" id="backToTopBtn" type="button">
+    ↑ ページトップ
   </button>
 
   <script>
     // ダミー記事データ
-    const articles = [
+    const posts = [
       {
-        id: "1",
+        id: 1,
         title: "SNSで話題のあのニュースをざっくり解説してみた件",
         date: "2025-12-01",
-        category: "news",
-        categoryLabel: "ニュース解説",
-        description: "タイムラインを騒がせたあのニュースを、ざっくりポイントだけ押さえたい人向けのゆるまとめ。",
-        thumbnail: "https://images.unsplash.com/photo-1518779578993-ec3579fee39f?auto=format&fit=crop&w=800&q=80",
-        quote: "難しそうに見えるけど、「結局こういう話だよね？」を一言でまとめたらこうなった、という記事。",
-        body: [
-          "X（旧Twitter）やニュースサイトでやたらと流れてきたあの話題。「なんとなく雰囲気は分かるけど、ちゃんと説明してと言われると自信がない……」という人向けの、ざっくり解説です。",
-          "まずは時系列で「何が起きたのか」を簡単に追っていきます。そのあとで、よくある疑問点をQ&A形式で整理しつつ、「結局、どこがポイントなのか？」を押さえていきます。",
-          "最後に、元記事や一次情報へのリンクもまとめているので、もっと深く知りたくなったらそちらもチェックしてみてください。"
-        ],
-        tags: ["ニュース", "ざっくり解説", "時系列まとめ"],
-        isNew: true,
-        readtime: "約5分で読める",
-        popularity: 1
+        category: "ニュース解説",
+        comments: 12,
+        excerpt: "タイムラインを騒がせたあのニュースを、ざっくりポイントだけ押さえたい人向けのゆるまとめ。",
+        image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80"
       },
       {
-        id: "2",
+        id: 2,
         title: "バズったスレから見る「ちょっと役立つ」生活の知恵",
         date: "2025-11-28",
-        category: "lifehack",
-        categoryLabel: "暮らしの知恵",
-        description: "地味だけど効く生活ハックを、バズったスレからピックアップして紹介。",
-        thumbnail: "https://images.unsplash.com/photo-1526498460520-4c246339dccb?auto=format&fit=crop&w=800&q=80",
-        quote: "なんか胡散臭いライフハックじゃなくて、「明日から試してみるか」ぐらいの距離感の小ネタだけ集めたやつ。",
-        body: [
-          "ネットの海には無数のライフハックが流れてきますが、その中から「これはちょっと試してみたいかも」というやつだけをスレッドから拾ってまとめました。",
-          "とくに、家事・片づけ・仕事の小ワザあたりは、ひとつ習慣にできると毎日のストレスが地味に減っていきます。",
-          "全部をやる必要はなくて、「自分の性格的に合いそうなものだけメモっておく」くらいがちょうどいいと思います。"
-        ],
-        tags: ["生活ハック", "バズったスレ", "ゆる知恵"],
-        isNew: false,
-        readtime: "約4分で読める",
-        popularity: 3
+        category: "ライフハック",
+        comments: 34,
+        excerpt: "地味だけど効く生活ハックを、バズったスレからピックアップして紹介。",
+        image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=900&q=80"
       },
       {
-        id: "3",
-        title: "図でなんとなく分かる最新テックニュースまとめ",
+        id: 3,
+        title: "図でなんとなくわかる最新テックニュースまとめ",
         date: "2025-11-20",
-        category: "tech",
-        categoryLabel: "テック解説",
-        description: "専門用語はできるだけ抜きにして、「何ができるようになったか」だけを図解イメージで整理。",
-        thumbnail: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
-        quote: "正確さ100点よりも、「ざっくり雰囲気だけつかみたい」を優先したテックまとめ。",
-        body: [
-          "AI・ブロックチェーン・VR/ARなど、ニュースではよく見るけれど、実際のところ何が変わりそうなのか分かりにくい分野をざっくり図解しました。",
-          "それぞれの技術について「昔はこうだった」「いまはこうなった」「この先こうなりそう」の三段階でイメージを整理しています。",
-          "詳しく知りたくなった人向けに、公式ドキュメントや分かりやすい解説記事へのリンクも最後にまとめてあります。"
-        ],
-        tags: ["テクノロジー", "AI", "図解"],
-        isNew: false,
-        readtime: "約7分で読める",
-        popularity: 2
+        category: "テック",
+        comments: 21,
+        excerpt: "細かい専門用語は抜きにして、話題のテックニュースをざっくり図解イメージで整理。",
+        image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80"
       },
       {
-        id: "4",
-        title: "炎上しがちなSNSの話題をできるだけ穏やかに読み解くスレ",
-        date: "2025-11-10",
-        category: "sns",
-        categoryLabel: "SNSネタ",
-        description: "タイムラインが荒れたときに、「とりあえず状況だけ落ち着いて整理したい人」向けの読み物。",
-        thumbnail: "https://images.unsplash.com/photo-1514986888952-8cd320577b68?auto=format&fit=crop&w=800&q=80",
-        quote: "とりあえず誰かを殴る前に、一度深呼吸して全体像だけ眺めてみよう、というスタンスの記事。",
-        body: [
-          "SNSのタイムラインが炎上モードになると、情報の出どころや前後の文脈がどんどん見えにくくなっていきます。",
-          "このまとめでは、できるだけ感情の温度を下げつつ、「何が起きているのか」「どこから話がこじれているのか」を整理します。",
-          "最終的なジャッジは読み手にゆだねつつ、「こういう見方もあるかも」という複数の視点を並べておくのがゴールです。"
-        ],
-        tags: ["SNS", "炎上", "議論の整理"],
-        isNew: false,
-        readtime: "約6分で読める",
-        popularity: 4
+        id: 4,
+        title: "【やさしく解説】いまさら聞けないあのネット用語",
+        date: "2025-11-15",
+        category: "ネット文化",
+        comments: 5,
+        excerpt: "タイムラインでよく見るけど、なんとなくふんわりしか分からないネット用語を、ざっくり解説。",
+        image: "https://images.unsplash.com/photo-1517292987719-0369a794ec0f?auto=format&fit=crop&w=900&q=80"
       }
     ];
 
-    // カテゴリ名の表示用
-    const categoryLabelMap = {
-      all: "すべて",
-      news: "ニュース",
-      sns: "SNSネタ",
-      lifehack: "暮らしの知恵",
-      tech: "テック解説"
-    };
+    // 人気記事（ダミー）
+    const popularRanks = [
+      "図でなんとなくわかる最新テックニュースまとめ",
+      "SNSで話題のあのニュースをざっくり解説してみた件",
+      "バズったスレから見る「ちょっと役立つ」生活の知恵",
+      "推し活とSNSとのちょうどいい距離感メモ（準備中）",
+      "休日に読みたい“ゆるめ解説記事”の歩き方"
+    ];
 
-    // 記事リストを描画
-    function renderArticleList(filterCategory = "all") {
+    function renderArticleList() {
       const listEl = document.getElementById("article-list");
-      let filtered = articles;
+      const fragment = document.createDocumentFragment();
 
-      if (filterCategory !== "all") {
-        filtered = articles.filter(a => a.category === filterCategory);
-      }
+      posts.forEach(post => {
+        const article = document.createElement("article");
+        article.className = "card article-card";
 
-      const html = filtered.map(article => {
-        return `
-          <article class="card post-card" data-article-id="${article.id}">
-            <div>
-              <img src="${article.thumbnail}" alt="" class="post-thumb">
+        article.innerHTML = `
+          <a href="#article-template" class="article-thumb">
+            <img src="${post.image}" alt="${post.title}">
+          </a>
+          <div class="article-body">
+            <div class="article-meta">
+              <span class="badge-category">${post.category}</span>
+              <span>投稿日：${post.date}</span>
+              <span class="badge-comments">コメント ${post.comments}</span>
             </div>
-            <div class="post-main">
-              <div class="post-meta">
-                <span class="badge-category">${article.categoryLabel}</span>
-                <span>${article.date}</span>
-                ${article.isNew ? '<span class="badge-new">NEW</span>' : ""}
-              </div>
-              <a href="#article-detail" class="post-title-link" data-article-id="${article.id}">
-                ${article.title}
-              </a>
-              <p class="post-desc">${article.description}</p>
-              <div class="post-tags">
-                ${article.tags.map(tag => `<span class="tag-chip">#${tag}</span>`).join("")}
-              </div>
-              <div class="post-footer">
-                <button class="read-more-btn" data-article-id="${article.id}">続きを読む »</button>
-                <span>${article.readtime}</span>
-              </div>
+            <h2 class="article-title">
+              <a href="#article-template">${post.title}</a>
+            </h2>
+            <p class="article-excerpt">${post.excerpt}</p>
+            <div class="article-footer">
+              <a href="#article-template" class="read-more">続きを読む</a>
             </div>
-          </article>
+          </div>
         `;
-      }).join("");
 
-      listEl.innerHTML = html || `<div class="card" style="padding:16px;font-size:0.9rem;">該当する記事がまだありません。</div>`;
+        fragment.appendChild(article);
+      });
+
+      // 疑似ページネーション
+      const pagination = document.createElement("div");
+      pagination.className = "pagination";
+      pagination.innerHTML = `
+        <span class="page-link current">1</span>
+        <span class="page-link">2</span>
+        <span class="page-link">3</span>
+        <span class="page-link">次へ »</span>
+      `;
+
+      listEl.appendChild(fragment);
+      listEl.appendChild(pagination);
     }
 
-    // 人気ランキングを描画
-    function renderRanking() {
-      const rankingList = document.getElementById("ranking-list");
-      const sorted = [...articles].sort((a, b) => a.popularity - b.popularity);
-      const html = sorted.map((article, index) => {
-        return `
-          <li class="ranking-item">
-            <span class="rank-number">${index + 1}位</span>
-            <button class="ranking-link" data-article-id="${article.id}">
-              ${article.title}
-            </button>
-          </li>
+    function renderPopularList() {
+      const popularEl = document.getElementById("popular-list");
+      popularRanks.forEach((title, index) => {
+        const li = document.createElement("li");
+        li.className = "rank-item";
+        li.innerHTML = `
+          <div class="rank-badge">${index + 1}位</div>
+          <a href="#article-template" class="rank-link"><span>${title}</span></a>
         `;
-      }).join("");
-      rankingList.innerHTML = html;
-    }
-
-    // 記事詳細を表示
-    function showArticleDetail(articleId) {
-      const article = articles.find(a => a.id === articleId);
-      if (!article) return;
-
-      const titleEl = document.getElementById("detail-title");
-      const catEl = document.getElementById("detail-category");
-      const dateEl = document.getElementById("detail-date");
-      const readtimeEl = document.getElementById("detail-readtime");
-      const imageEl = document.getElementById("detail-image");
-      const quoteEl = document.getElementById("detail-quote");
-      const bodyEl = document.getElementById("detail-body");
-      const tagsEl = document.getElementById("detail-tags");
-      const relatedEl = document.getElementById("related-list");
-
-      titleEl.textContent = article.title;
-      catEl.textContent = article.categoryLabel;
-      dateEl.textContent = article.date;
-      readtimeEl.textContent = article.readtime;
-      imageEl.src = article.thumbnail;
-      imageEl.alt = article.title;
-      quoteEl.textContent = article.quote;
-
-      bodyEl.innerHTML = article.body.map(p => `<p>${p}</p>`).join("");
-
-      tagsEl.innerHTML = article.tags.map(tag => `<span class="tag-chip">#${tag}</span>`).join("");
-
-      // 関連記事（同じカテゴリから自分以外を3件まで）
-      const related = articles.filter(a => a.category === article.category && a.id !== article.id).slice(0, 3);
-      relatedEl.innerHTML = related.length
-        ? related.map(r => `<li><a href="#article-detail" data-article-id="${r.id}">${r.title}</a></li>`).join("")
-        : `<li>同じカテゴリの関連記事は準備中です。</li>`;
-
-      // スクロール
-      document.getElementById("article-detail").scrollIntoView({
-        behavior: "smooth",
-        block: "start"
+        popularEl.appendChild(li);
       });
     }
 
-    // カテゴリフィルターの状態更新
-    function setActiveCategory(category) {
-      const chips = document.querySelectorAll(".category-chip");
-      chips.forEach(chip => {
-        const c = chip.getAttribute("data-category");
-        chip.classList.toggle("active", c === category);
-      });
-    }
-
-    // イベントのセットアップ
-    function setupEvents() {
-      // 記事カード・続きを読む・タイトルクリック
-      document.addEventListener("click", event => {
-        const target = event.target;
-
-        const articleTrigger = target.closest("[data-article-id]");
-        if (articleTrigger && (articleTrigger.classList.contains("post-title-link")
-          || articleTrigger.classList.contains("read-more-btn")
-          || articleTrigger.classList.contains("ranking-link")
-        )) {
-          const articleId = articleTrigger.getAttribute("data-article-id");
-          showArticleDetail(articleId);
-          event.preventDefault();
-        }
-
-        // カテゴリフィルタ
-        if (target.classList.contains("category-chip")) {
-          const category = target.getAttribute("data-category");
-          setActiveCategory(category);
-          renderArticleList(category);
-        }
-      });
-
-      // スクロールでトップボタン表示
-      const backToTopBtn = document.getElementById("backToTop");
+    // ページトップボタン
+    function setupBackToTop() {
+      const btn = document.getElementById("backToTopBtn");
       window.addEventListener("scroll", () => {
-        if (window.scrollY > 240) {
-          backToTopBtn.classList.add("visible");
+        if (window.scrollY > 300) {
+          btn.classList.add("show");
         } else {
-          backToTopBtn.classList.remove("visible");
+          btn.classList.remove("show");
         }
       });
 
-      backToTopBtn.addEventListener("click", () => {
-        document.getElementById("top").scrollIntoView({
-          behavior: "smooth",
-          block: "start"
+      btn.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    }
+
+    // アンカーリンクをスムーススクロールに
+    function setupSmoothAnchors() {
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+          const targetId = this.getAttribute("href").slice(1);
+          const target = document.getElementById(targetId);
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
         });
       });
     }
 
     // 初期化
-    function init() {
-      renderArticleList("all");
-      renderRanking();
-      setupEvents();
-      // 最初は1番人気の記事を詳細に表示
-      const topArticleId = [...articles].sort((a, b) => a.popularity - b.popularity)[0].id;
-      showArticleDetail(topArticleId);
-    }
-
-    document.addEventListener("DOMContentLoaded", init);
+    renderArticleList();
+    renderPopularList();
+    setupBackToTop();
+    setupSmoothAnchors();
   </script>
 </body>
 </html>
